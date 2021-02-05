@@ -19,13 +19,18 @@ namespace MailJet.Client
 {
     public class MailJetClient
     {
-        private readonly string _publicKey;
-        private readonly string _privateKey;
+        public string UserName { get; set; }
+        public string Password { get; set; }
 
-        public MailJetClient(string PublicKey, string PrivateKey)
+		public MailJetClient()
+		{
+
+		}
+
+        public MailJetClient(string userName, string password)
         {
-            _publicKey = PublicKey;
-            _privateKey = PrivateKey;
+            UserName = userName;
+            Password = password;
         }
 
         public Response<ContactListData> CreateContactList(string Name)
@@ -676,13 +681,14 @@ namespace MailJet.Client
                 throw new Exception(String.Format("{0}\n{1}", error.ErrorMessage, error.ErrorMessage));
         }
 
+
         private RestClient WebClient
         {
             get
             {
                 var client = new RestClient("https://api.mailjet.com/v3")
                 {
-                    Authenticator = new HttpBasicAuthenticator(_publicKey, _privateKey),
+                    Authenticator = new HttpBasicAuthenticator(UserName, Password),
                     UserAgent = "MailJet.NET Client"
                 };
 
