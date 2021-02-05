@@ -102,10 +102,12 @@ namespace MailJet.Client
 			var request = new RestRequest("REST/contactslist/{id}/managecontact", Method.POST);
 			request.AddParameter("id", ID, ParameterType.UrlSegment);
 			request.JsonSerializer = NewtonsoftJsonSerializer.Default;
-			JObject o = new JObject();
-			o.Add("name", contact.Name);
-			o.Add("email", contact.Email);
-			o.Add("action", System.Enum.GetName(typeof(CreateContactAction), contact.Action));
+			JObject o = new JObject
+			{
+				{ "name", contact.Name },
+				{ "email", contact.Email },
+				{ "action", System.Enum.GetName(typeof(CreateContactAction), contact.Action) }
+			};
 
 			JObject p = new JObject();
 			foreach (var i in contact.Properties)
@@ -192,18 +194,18 @@ namespace MailJet.Client
 			return SendTemplateMessage(TemplateId, new MailAddress[] { To }, From, Subject, Parameters, Properties);
 		}
 
-		public String TemplateErrorReporting { get; set; }
+		public string TemplateErrorReporting { get; set; }
 
 		public Response<DataItem> SendTemplateMessage(long TemplateId, MailAddress[] To, MailAddress From, string Subject, Dictionary<string, object> Parameters = null, Dictionary<string, string> Properties = null)
 		{
-			if (To == null || To.Any(x => String.IsNullOrWhiteSpace(x.Address)))
-				throw new ArgumentNullException("To", "You must specify the recipient address");
+			if (To == null || To.Any(x => string.IsNullOrWhiteSpace(x.Address)))
+				throw new ArgumentNullException(nameof(To), "You must specify the recipient address");
 
-			if (From == null || String.IsNullOrWhiteSpace(From.Address))
-				throw new ArgumentNullException("From", "You must specify the sender");
+			if (From == null || string.IsNullOrWhiteSpace(From.Address))
+				throw new ArgumentNullException(nameof(From), "You must specify the sender");
 
-			if (String.IsNullOrWhiteSpace(Subject))
-				throw new ArgumentNullException("Subject", "You must specify the Subject");
+			if (string.IsNullOrWhiteSpace(Subject))
+				throw new ArgumentNullException(nameof(Subject), "You must specify the Subject");
 
 			var request = new RestRequest("send/message", Method.POST)
 			{
@@ -214,13 +216,13 @@ namespace MailJet.Client
 
 			o.Add("MJ-TemplateID", TemplateId);
 			o.Add("MJ-TemplateLanguage", true);
-			if (!String.IsNullOrWhiteSpace(TemplateErrorReporting))
+			if (!string.IsNullOrWhiteSpace(TemplateErrorReporting))
 				o.Add("MJ-TemplateErrorReporting", TemplateErrorReporting);
 
 			o.Add("Subject", Subject);
 			o.Add("FromEmail", From.Address);
 
-			if (!String.IsNullOrWhiteSpace(From.DisplayName))
+			if (!string.IsNullOrWhiteSpace(From.DisplayName))
 				o.Add("FromName", From.DisplayName);
 
 			o.Add("Recipients", JToken.FromObject(To, NewtonsoftJsonSerializer.Default.Serializer));
@@ -261,7 +263,7 @@ namespace MailJet.Client
 			if (Message.From == null)
 				throw new InvalidOperationException("You must specify the from address. http://dev.mailjet.com/guides/send-api-guide/");
 
-			if (String.IsNullOrWhiteSpace(Message.Subject))
+			if (string.IsNullOrWhiteSpace(Message.Subject))
 				throw new InvalidOperationException("You must specify the subject address. http://dev.mailjet.com/guides/send-api-guide/");
 
 			if (Message.Subject.Length > 255)
@@ -275,7 +277,7 @@ namespace MailJet.Client
 			if (recipientsCount > 50)
 				throw new InvalidOperationException("Max Recipients is 50. http://dev.mailjet.com/guides/send-api-guide/");
 
-			if (String.IsNullOrWhiteSpace(Message.From.DisplayName))
+			if (string.IsNullOrWhiteSpace(Message.From.DisplayName))
 			{
 				message.Add("FromEmail", Message.From.Address);
 			}
@@ -290,13 +292,13 @@ namespace MailJet.Client
 			string to = "";
 			foreach (var address in Message.To)
 			{
-				if (String.IsNullOrWhiteSpace(address.DisplayName))
+				if (string.IsNullOrWhiteSpace(address.DisplayName))
 				{
 					to += address.Address + ",";
 				}
 				else
 				{
-					to += String.Format("{0} <{1}>,", address.DisplayName, address.Address);
+					to += string.Format("{0} <{1}>,", address.DisplayName, address.Address);
 				}
 			}
 			message.Add("To", to);
@@ -304,33 +306,33 @@ namespace MailJet.Client
 			string cc = "";
 			foreach (var address in Message.CC)
 			{
-				if (String.IsNullOrWhiteSpace(address.DisplayName))
+				if (string.IsNullOrWhiteSpace(address.DisplayName))
 				{
 					cc += address.Address + ",";
 				}
 				else
 				{
-					cc += String.Format("{0} <{1}>,", address.DisplayName, address.Address);
+					cc += string.Format("{0} <{1}>,", address.DisplayName, address.Address);
 				}
 			}
 
-			if (!String.IsNullOrWhiteSpace(cc))
+			if (!string.IsNullOrWhiteSpace(cc))
 				message.Add("CC", cc);
 
 			string bcc = "";
 			foreach (var address in Message.Bcc)
 			{
-				if (String.IsNullOrWhiteSpace(address.DisplayName))
+				if (string.IsNullOrWhiteSpace(address.DisplayName))
 				{
 					bcc += address.Address + ",";
 				}
 				else
 				{
-					bcc += String.Format("{0} <{1}>,", address.DisplayName, address.Address);
+					bcc += string.Format("{0} <{1}>,", address.DisplayName, address.Address);
 				}
 			}
 
-			if (!String.IsNullOrWhiteSpace(bcc))
+			if (!string.IsNullOrWhiteSpace(bcc))
 				message.Add("Bcc", bcc);
 
 			if (Message.IsBodyHtml)
@@ -346,16 +348,14 @@ namespace MailJet.Client
 				JArray attachments = new JArray();
 				foreach (var item in Message.Attachments)
 				{
-					using (MemoryStream ms = new MemoryStream())
-					{
-						item.ContentStream.CopyTo(ms);
-						JObject attachment = new JObject();
-						attachment.Add("Content-type", new JValue(MimeTypeMap.GetMimeType(Path.GetExtension(item.Name))));
-						attachment.Add("Filename", new JValue(item.Name));
-						string file = Convert.ToBase64String(ms.ToArray());
-						attachment.Add("content", new JValue(file));
-						attachments.Add(attachment);
-					}
+					using MemoryStream ms = new MemoryStream();
+					item.ContentStream.CopyTo(ms);
+					JObject attachment = new JObject();
+					attachment.Add("Content-type", new JValue(MimeTypeMap.GetMimeType(Path.GetExtension(item.Name))));
+					attachment.Add("Filename", new JValue(item.Name));
+					string file = Convert.ToBase64String(ms.ToArray());
+					attachment.Add("content", new JValue(file));
+					attachments.Add(attachment);
 				}
 				message.Add("Attachments", attachments);
 			}
@@ -367,21 +367,19 @@ namespace MailJet.Client
 				JArray attachments = new JArray();
 				foreach (var item in view.LinkedResources)
 				{
-					using (var ms = new MemoryStream())
-					{
-						item.ContentStream.CopyTo(ms);
-						JObject attachment = new JObject();
-						attachment.Add("Content-type", new JValue(MimeTypeMap.GetMimeType(Path.GetExtension(item.ContentId))));
-						attachment.Add("Filename", new JValue(item.ContentId));
-						string file = Convert.ToBase64String(ms.ToArray());
-						attachment.Add("content", new JValue(file));
-						attachments.Add(attachment);
-					}
+					using var ms = new MemoryStream();
+					item.ContentStream.CopyTo(ms);
+					JObject attachment = new JObject();
+					attachment.Add("Content-type", new JValue(MimeTypeMap.GetMimeType(Path.GetExtension(item.ContentId))));
+					attachment.Add("Filename", new JValue(item.ContentId));
+					string file = Convert.ToBase64String(ms.ToArray());
+					attachment.Add("content", new JValue(file));
+					attachments.Add(attachment);
 				}
 				message.Add("Inline_attachments", attachments);
 			}
 
-			if (Message.Sender != null && !String.IsNullOrWhiteSpace(Message.Sender.Address))
+			if (Message.Sender != null && !string.IsNullOrWhiteSpace(Message.Sender.Address))
 				throw new NotImplementedException("Sender Address not yet supported.");
 
 			request.AddJsonBody(message);
@@ -516,7 +514,7 @@ namespace MailJet.Client
 		{
 			var request = new RestRequest("REST/metasender", Method.POST);
 			request.AddParameter("email", Email);
-			if (!String.IsNullOrWhiteSpace(Description))
+			if (!string.IsNullOrWhiteSpace(Description))
 				request.AddParameter("description", Description);
 
 			return ExecuteRequest<MetaSenderData>(request);
@@ -526,9 +524,9 @@ namespace MailJet.Client
 		{
 			var request = new RestRequest("REST/metasender/{id}", Method.PUT);
 			request.AddParameter("id", SenderId, ParameterType.UrlSegment);
-			if (!String.IsNullOrWhiteSpace(Email))
+			if (!string.IsNullOrWhiteSpace(Email))
 				request.AddParameter("email", Email);
-			if (!String.IsNullOrWhiteSpace(Description))
+			if (!string.IsNullOrWhiteSpace(Description))
 				request.AddParameter("description", Description);
 			if (IsEnabled.HasValue)
 				request.AddParameter("isEnabled", IsEnabled.Value);
@@ -582,7 +580,7 @@ namespace MailJet.Client
 			if (ContactId.HasValue)
 				request.AddQueryParameter("Contact", ContactId.Value.ToString());
 
-			if (!String.IsNullOrWhiteSpace(ContactEmail))
+			if (!string.IsNullOrWhiteSpace(ContactEmail))
 				request.AddQueryParameter("ContactEmail", ContactEmail);
 
 			if (ContactsListId.HasValue)
@@ -594,13 +592,13 @@ namespace MailJet.Client
 			if (LastActivityAt.HasValue)
 				request.AddQueryParameter("LastActivityAt", LastActivityAt.Value.ToString());
 
-			if (!String.IsNullOrWhiteSpace(ListName))
+			if (!string.IsNullOrWhiteSpace(ListName))
 				request.AddQueryParameter("ListName", ListName);
 
 			if (IsOpened.HasValue)
 				request.AddQueryParameter("Opened", IsOpened.Value.ToString());
 
-			if (!String.IsNullOrWhiteSpace(Status))
+			if (!string.IsNullOrWhiteSpace(Status))
 				request.AddQueryParameter("Status", Status);
 
 			if (Unsub.HasValue)
@@ -622,7 +620,7 @@ namespace MailJet.Client
 			if (CampaignAggregateID.HasValue)
 				request.AddParameter("CampaignAggregateID", CampaignAggregateID.Value);
 
-			if (!String.IsNullOrWhiteSpace(Range))
+			if (!string.IsNullOrWhiteSpace(Range))
 				request.AddParameter("Range", Range);
 
 			return ExecuteRequest<AggregateGraphStatistics>(request);
@@ -639,8 +637,8 @@ namespace MailJet.Client
 				return null;
 
 			var error = JsonConvert.DeserializeObject<ErrorResponse>(result.Content);
-			if (!String.IsNullOrWhiteSpace(error.ErrorInfo) || !String.IsNullOrWhiteSpace(error.ErrorMessage))
-				throw new Exception(String.Format("{0}\n{1}", error.ErrorMessage, error.ErrorMessage));
+			if (!string.IsNullOrWhiteSpace(error.ErrorInfo) || !string.IsNullOrWhiteSpace(error.ErrorMessage))
+				throw new Exception(string.Format("{0}\n{1}", error.ErrorMessage, error.ErrorMessage));
 
 			var data = JsonConvert.DeserializeObject<Response<T>>(result.Content);
 			return data;
@@ -660,8 +658,8 @@ namespace MailJet.Client
 				throw new UnauthorizedAccessException("MailJet returned an HTTP 401 exception, please check your credentials");
 
 			var error = JsonConvert.DeserializeObject<ErrorResponse>(result.Content);
-			if (!String.IsNullOrWhiteSpace(error.ErrorInfo) || !String.IsNullOrWhiteSpace(error.ErrorMessage))
-				throw new Exception(String.Format("{0}\n{1}", error.ErrorMessage, error.ErrorMessage));
+			if (!string.IsNullOrWhiteSpace(error.ErrorInfo) || !string.IsNullOrWhiteSpace(error.ErrorMessage))
+				throw new Exception(string.Format("{0}\n{1}", error.ErrorMessage, error.ErrorMessage));
 
 			var data = JsonConvert.DeserializeObject<SentMessageData>(result.Content);
 			return data;
@@ -677,8 +675,8 @@ namespace MailJet.Client
 				return;
 
 			var error = JsonConvert.DeserializeObject<ErrorResponse>(result.Content);
-			if (!String.IsNullOrWhiteSpace(error.ErrorInfo) || !String.IsNullOrWhiteSpace(error.ErrorMessage))
-				throw new Exception(String.Format("{0}\n{1}", error.ErrorMessage, error.ErrorMessage));
+			if (!string.IsNullOrWhiteSpace(error.ErrorInfo) || !string.IsNullOrWhiteSpace(error.ErrorMessage))
+				throw new Exception(string.Format("{0}\n{1}", error.ErrorMessage, error.ErrorMessage));
 		}
 
 

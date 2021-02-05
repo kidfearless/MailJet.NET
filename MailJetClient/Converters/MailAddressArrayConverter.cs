@@ -25,7 +25,7 @@ namespace MailJet.Client.Converters
 				writer.WriteStartObject();
 				writer.WritePropertyName("Email");
 				writer.WriteValue(item.Address);
-				if (!String.IsNullOrWhiteSpace(item.DisplayName))
+				if (!string.IsNullOrWhiteSpace(item.DisplayName))
 				{
 					writer.WritePropertyName("Name");
 					writer.WriteValue(item.DisplayName);

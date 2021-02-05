@@ -8,9 +8,9 @@ namespace MailJet.Client.Converters
 {
 	public class NewtonsoftJsonSerializer : ISerializer
 	{
-		private Newtonsoft.Json.JsonSerializer serializer;
+		private readonly JsonSerializer serializer;
 
-		public NewtonsoftJsonSerializer(Newtonsoft.Json.JsonSerializer serializer)
+		public NewtonsoftJsonSerializer(JsonSerializer serializer)
 		{
 			this.serializer = serializer;
 		}
@@ -21,7 +21,7 @@ namespace MailJet.Client.Converters
 			set { }
 		}
 
-		public Newtonsoft.Json.JsonSerializer Serializer
+		public JsonSerializer Serializer
 		{
 			get
 			{
@@ -37,35 +37,27 @@ namespace MailJet.Client.Converters
 
 		public string Serialize(object obj)
 		{
-			using (var stringWriter = new StringWriter())
-			{
-				using (var jsonTextWriter = new JsonTextWriter(stringWriter))
-				{
-					serializer.Serialize(jsonTextWriter, obj);
+			using var stringWriter = new StringWriter();
+			using var jsonTextWriter = new JsonTextWriter(stringWriter);
+			serializer.Serialize(jsonTextWriter, obj);
 
-					return stringWriter.ToString();
-				}
-			}
+			return stringWriter.ToString();
 		}
 
 		public T Deserialize<T>(RestSharp.IRestResponse response)
 		{
 			var content = response.Content;
 
-			using (var stringReader = new StringReader(content))
-			{
-				using (var jsonTextReader = new JsonTextReader(stringReader))
-				{
-					return serializer.Deserialize<T>(jsonTextReader);
-				}
-			}
+			using var stringReader = new StringReader(content);
+			using var jsonTextReader = new JsonTextReader(stringReader);
+			return serializer.Deserialize<T>(jsonTextReader);
 		}
 
 		public static NewtonsoftJsonSerializer Default
 		{
 			get
 			{
-				Newtonsoft.Json.JsonSerializer json = new Newtonsoft.Json.JsonSerializer()
+				JsonSerializer json = new JsonSerializer()
 				{
 					NullValueHandling = NullValueHandling.Ignore,
 				};
