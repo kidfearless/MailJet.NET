@@ -1,10 +1,10 @@
 ﻿namespace MailJet.Client.Enum
 {
-    public enum ContactMetadataDataType
-    {
-        @str,
-        @int,
-        @float,
-        @bool
-    }
+	public enum ContactMetadataDataType
+	{
+		@str,
+		@int,
+		@float,
+		@bool
+	}
 }

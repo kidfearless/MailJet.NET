@@ -1,8 +1,8 @@
 ﻿namespace MailJet.Client.Enum
 {
-    public enum ContactMetadataNameSpace
-    {
-        @static,
-        @historic
-    }
+	public enum ContactMetadataNameSpace
+	{
+		@static,
+		@historic
+	}
 }
