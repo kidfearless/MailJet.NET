@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MailJet.Client", "MailJetClient\MailJet.Client.csproj", "{E9FB2ADE-8D07-489C-8BF1-93CB3A0E7C8B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MailJet.Client.Tests", "MailJet.Client.Tests\MailJet.Client.Tests.csproj", "{F8248C44-2C38-446F-B70E-8CBB867D6B21}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8727191C-09F5-4357-A0CD-6EF5DEED5D6E}"
@@ -13,22 +11,34 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{36D97936-A18E-4F15-A191-51AFE7EFE6A1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MailJet.Client", "MailJetClient\MailJet.Client.csproj", "{6AB84A81-0CDD-4FD6-963D-D9D0E1E4CD32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E9FB2ADE-8D07-489C-8BF1-93CB3A0E7C8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E9FB2ADE-8D07-489C-8BF1-93CB3A0E7C8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E9FB2ADE-8D07-489C-8BF1-93CB3A0E7C8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E9FB2ADE-8D07-489C-8BF1-93CB3A0E7C8B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F8248C44-2C38-446F-B70E-8CBB867D6B21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F8248C44-2C38-446F-B70E-8CBB867D6B21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8248C44-2C38-446F-B70E-8CBB867D6B21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8248C44-2C38-446F-B70E-8CBB867D6B21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36D97936-A18E-4F15-A191-51AFE7EFE6A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36D97936-A18E-4F15-A191-51AFE7EFE6A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36D97936-A18E-4F15-A191-51AFE7EFE6A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36D97936-A18E-4F15-A191-51AFE7EFE6A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AB84A81-0CDD-4FD6-963D-D9D0E1E4CD32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AB84A81-0CDD-4FD6-963D-D9D0E1E4CD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AB84A81-0CDD-4FD6-963D-D9D0E1E4CD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AB84A81-0CDD-4FD6-963D-D9D0E1E4CD32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DF007237-737E-4A00-94A8-97A06D1DFCEA}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
@@ -50,8 +60,5 @@ Global
 		$2.inheritsSet = Mono
 		$2.inheritsScope = text/x-csharp
 		$2.scope = text/x-csharp
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
