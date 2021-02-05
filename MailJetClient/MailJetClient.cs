@@ -212,10 +212,11 @@ namespace MailJet.Client
 				RequestFormat = DataFormat.Json,
 				JsonSerializer = NewtonsoftJsonSerializer.Default
 			};
-			JObject o = new JObject();
-
-			o.Add("MJ-TemplateID", TemplateId);
-			o.Add("MJ-TemplateLanguage", true);
+			JObject o = new JObject
+			{
+				{ "MJ-TemplateID", TemplateId },
+				{ "MJ-TemplateLanguage", true }
+			};
 			if (!string.IsNullOrWhiteSpace(TemplateErrorReporting))
 				o.Add("MJ-TemplateErrorReporting", TemplateErrorReporting);
 
@@ -350,9 +351,11 @@ namespace MailJet.Client
 				{
 					using MemoryStream ms = new MemoryStream();
 					item.ContentStream.CopyTo(ms);
-					JObject attachment = new JObject();
-					attachment.Add("Content-type", new JValue(MimeTypeMap.GetMimeType(Path.GetExtension(item.Name))));
-					attachment.Add("Filename", new JValue(item.Name));
+					JObject attachment = new JObject
+					{
+						{ "Content-type", new JValue(MimeTypeMap.GetMimeType(Path.GetExtension(item.Name))) },
+						{ "Filename", new JValue(item.Name) }
+					};
 					string file = Convert.ToBase64String(ms.ToArray());
 					attachment.Add("content", new JValue(file));
 					attachments.Add(attachment);
@@ -369,9 +372,11 @@ namespace MailJet.Client
 				{
 					using var ms = new MemoryStream();
 					item.ContentStream.CopyTo(ms);
-					JObject attachment = new JObject();
-					attachment.Add("Content-type", new JValue(MimeTypeMap.GetMimeType(Path.GetExtension(item.ContentId))));
-					attachment.Add("Filename", new JValue(item.ContentId));
+					JObject attachment = new JObject
+					{
+						{ "Content-type", new JValue(MimeTypeMap.GetMimeType(Path.GetExtension(item.ContentId))) },
+						{ "Filename", new JValue(item.ContentId) }
+					};
 					string file = Convert.ToBase64String(ms.ToArray());
 					attachment.Add("content", new JValue(file));
 					attachments.Add(attachment);
