@@ -14,6 +14,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using MimeTypes;
+using System.Threading.Tasks;
 
 namespace MailJet.Client
 {
@@ -21,6 +22,21 @@ namespace MailJet.Client
 	{
 		public string UserName { get; set; }
 		public string Password { get; set; }
+		private RestClient WebClient
+		{
+			get
+			{
+				var client = new RestClient("https://api.mailjet.com/v3")
+				{
+					Authenticator = new HttpBasicAuthenticator(UserName, Password),
+					UserAgent = "MailJet.NET Client"
+				};
+
+				return client;
+			}
+		}
+
+
 
 		public MailJetClient()
 		{
@@ -32,6 +48,8 @@ namespace MailJet.Client
 			UserName = userName;
 			Password = password;
 		}
+
+
 
 		public Response<ContactListData> CreateContactList(string Name)
 		{
@@ -253,6 +271,20 @@ namespace MailJet.Client
 
 		public SentMessageData SendMessage(MailMessage Message)
 		{
+			RestRequest request = GenerateRestMailMessage(Message);
+
+			return SendMessage(request);
+		}
+
+		public async Task<SentMessageData> SendMessageAsync(MailMessage Message)
+		{
+			RestRequest request = GenerateRestMailMessage(Message);
+
+			return await SendMessageAsync(request);
+		}
+
+		private static RestRequest GenerateRestMailMessage(MailMessage Message)
+		{
 			var request = new RestRequest("send/message", Method.POST)
 			{
 				RequestFormat = DataFormat.Json,
@@ -388,8 +420,7 @@ namespace MailJet.Client
 				throw new NotImplementedException("Sender Address not yet supported.");
 
 			request.AddJsonBody(message);
-
-			return SendMessage(request);
+			return request;
 		}
 
 		public Response<MessageData> GetMessageHistory(long MessageId)
@@ -670,6 +701,26 @@ namespace MailJet.Client
 			return data;
 		}
 
+		private async Task<SentMessageData> SendMessageAsync(RestRequest request)
+		{
+			request.RequestFormat = DataFormat.Json;
+			request.JsonSerializer = NewtonsoftJsonSerializer.Default;
+
+			var result = await WebClient.ExecuteAsync(request);
+
+			if (result.ResponseStatus == ResponseStatus.Completed && (result.StatusCode == HttpStatusCode.NoContent))
+				return null;
+
+			if (result.ResponseStatus == ResponseStatus.Completed && result.StatusCode == HttpStatusCode.Unauthorized)
+				throw new UnauthorizedAccessException("MailJet returned an HTTP 401 exception, please check your credentials");
+
+			var error = JsonConvert.DeserializeObject<ErrorResponse>(result.Content);
+			if (!string.IsNullOrWhiteSpace(error.ErrorInfo) || !string.IsNullOrWhiteSpace(error.ErrorMessage))
+				throw new Exception(string.Format("{0}\n{1}", error.ErrorMessage, error.ErrorMessage));
+
+			var data = JsonConvert.DeserializeObject<SentMessageData>(result.Content);
+			return data;
+		}
 		private void ExecuteRequest(RestRequest request)
 		{
 			request.RequestFormat = DataFormat.Json;
@@ -682,21 +733,6 @@ namespace MailJet.Client
 			var error = JsonConvert.DeserializeObject<ErrorResponse>(result.Content);
 			if (!string.IsNullOrWhiteSpace(error.ErrorInfo) || !string.IsNullOrWhiteSpace(error.ErrorMessage))
 				throw new Exception(string.Format("{0}\n{1}", error.ErrorMessage, error.ErrorMessage));
-		}
-
-
-		private RestClient WebClient
-		{
-			get
-			{
-				var client = new RestClient("https://api.mailjet.com/v3")
-				{
-					Authenticator = new HttpBasicAuthenticator(UserName, Password),
-					UserAgent = "MailJet.NET Client"
-				};
-
-				return client;
-			}
 		}
 	}
 }
